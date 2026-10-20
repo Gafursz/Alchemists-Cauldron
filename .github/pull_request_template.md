@@ -21,7 +21,7 @@ Add your publicly accessible deployment URL.
 
 ## Self-check
 
-- Expected score: 0 / 58 (update for the relevant story)
+- Expected score: fill in after checking the applicable story criteria
 - [ ] Code runs locally and the production build passes.
 - [ ] ESLint and Prettier checks pass.
 - [ ] The application is responsive.
