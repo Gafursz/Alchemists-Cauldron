@@ -1,4 +1,5 @@
-// Level 1 uses Medium only. See docs/IMPLEMENTATION.md for the time-cap ambiguity.
+// Level 1 uses the fixed Medium rules from the task specification.
+
 export const SETTINGS = {
   difficulty: 'medium',
   ingredientCount: 6,

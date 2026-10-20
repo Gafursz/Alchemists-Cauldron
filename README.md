@@ -73,16 +73,14 @@ The ZIP includes `dist/` for convenience, but `.gitignore` excludes it from comm
 
 `.gitattributes` declares LF endings for text files, `.prettierrc.json` explicitly sets `endOfLine: lf`, and `.editorconfig` asks editors to save UTF-8/LF files. This makes Git Bash/Windows and other environments agree. Do not change your global Git configuration for this package. Instructions for reviewing and normalizing existing files are in `docs/INTEGRATION.md`.
 
-## Specification decision
-
-US 1.3 says the success bonus caps at 120 seconds; US 1.4 says it caps at the starting time. This build follows US 1.4 and uses **150 seconds**. The choice is centralized as `SETTINGS.timeCap` in `src/data/difficulty.ts`; ask the task authors if they clarify the contradiction.
-
 ## Explanation and next steps
 
 - `docs/IMPLEMENTATION.md`: what changed, why, file responsibilities and behavior.
 - `docs/INTEGRATION.md`: safe integration, every terminal command explained, and branch/PR targets.
 - `docs/VERIFICATION.md`: actual checks and known delivery limits.
 
-Author attribution is set to **Gafursz** in package metadata, HTML metadata and the game footer. Git author email is not fabricated. This delivery has not been pushed, deployed or submitted to RS App. Deployment, final PR details and course submission remain separate work.
-
 [RS School assignment](https://github.com/rolling-scopes-school/qualifying-stage/blob/main/tasks/game-alchemists-cauldron/README.md)
+
+Story 2 has been pushed to GitHub and the final `story-2` → `story-1`
+review Pull Request is open and intentionally unmerged. Public deployment
+and RS App submission remain to be completed.
