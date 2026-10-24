@@ -26,6 +26,7 @@ export interface Recipe {
 export type EndReason = 'Time is up' | 'No lives remaining' | 'Out of ingredients';
 export interface GameState {
   status: GameStatus;
+  difficulty: Difficulty;
   score: number;
   timeLeft: number;
   lives: number;
@@ -40,4 +41,15 @@ export interface LeaderboardEntry {
   name: string;
   score: number;
   date: number;
+}
+export interface SavedGame {
+  version: 1;
+  difficulty: Difficulty;
+  score: number;
+  timeLeft: number;
+  lives: number;
+  activeRecipe: Recipe;
+  cauldronIngredients: Ingredient[];
+  shelfStock: Record<string, number>;
+  status: 'playing' | 'paused';
 }

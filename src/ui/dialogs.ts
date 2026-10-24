@@ -1,3 +1,4 @@
+import { DIFFICULTIES, DIFFICULTY_SETTINGS, difficultyName } from '../data/difficulty.js';
 import type { GameState } from '../types.js';
 import { formatDate, qualifies } from '../storage/leaderboard.js';
 import type { Leaderboard } from '../storage/leaderboard.js';
@@ -10,14 +11,127 @@ export function dialogMarkup(
   state: GameState,
   board: Leaderboard,
   submitted: boolean,
+  canContinue = false,
 ): string {
+  const settings = DIFFICULTY_SETTINGS[state.difficulty];
+
   const back = '<button class="secondary" data-action="back">Back</button>';
   if (page === 'pause')
-    return `${heading('TAKE YOUR TIME', 'A moment of stillness.')}<p>Your potion can wait. The clock is paused and your ingredients are safe.</p><div class="dialog-actions"><button class="primary" data-action="resume" autofocus>Resume Game</button><button class="secondary" data-action="exit">Exit to Menu</button></div><p class="fine-print">Exiting ends this run. Save & Continue belongs to Level 2.</p>`;
+    return `${heading('TAKE YOUR TIME', 'A moment of stillness.')}<p>Your potion can wait. The clock is paused and your ingredients are safe.</p><div class="dialog-actions"><button class="primary" data-action="resume" autofocus>Resume Game</button><button class="secondary" data-action="exit">Exit to Menu</button></div><p class="fine-print">Exiting ends this run and returns you to the main menu.</p>`;
   if (page === 'help')
-    return `${heading('A SMALL GUIDE TO BIG MAGIC', 'How to brew')}<ol class="help-list"><li><strong>Read your recipe.</strong> Match Temperature, Density and Magic Power. The bright green zones show the exact targets.</li><li><strong>Add ingredients.</strong> Click a card. T, D and M show its effects. Each addition spends one portion; you can use an ingredient more than once.</li><li><strong>Watch the mixture.</strong> Add up to four ingredients. Negative values are allowed. Brew accepts ±8 beyond each target range.</li><li><strong>Brew your potion.</strong> One ingredient is enough to try. Success earns 200 points and up to 10 seconds. Failure costs one life. Both clear the cauldron without refunding stock.</li><li><strong>Keep the magic alive.</strong> Start with 2:30 and three lives. The game ends at zero time, zero lives, or when both shelf and cauldron are empty.</li></ol><p class="fine-print">Pause freezes the clock. Switching tabs pauses automatically. Use Tab and Enter/Space to operate buttons. No reactions in Level 1.</p><div class="dialog-actions">${back}</div>`;
-  if (page === 'menu')
-    return `${heading('THE MIDNIGHT POTION LAB', 'Welcome, alchemist.')}<p>Turn a handful of curious ingredients into something extraordinary.</p><div class="menu-rule"><span>Level 1 · Medium</span><span>6 ingredients · 3 lives · 2:30</span></div><div class="dialog-actions vertical"><button class="primary" data-action="start">Start Game</button><button class="secondary" data-action="leaderboard">Leaderboard</button><button class="secondary" data-action="help">How to Play</button><button class="text-button" data-action="close">Back to the lab</button></div>`;
+    return `${heading('A SMALL GUIDE TO BIG MAGIC', 'How to brew')}
+    <ol class="help-list">
+      <li>
+        <strong>Read your recipe.</strong>
+        Match Temperature, Density and Magic Power.
+        The bright green zones show the exact targets.
+      </li>
+
+      <li>
+        <strong>Add ingredients.</strong>
+        Click a card. T, D and M show its effects.
+        Each addition spends one portion.
+      </li>
+
+      <li>
+        <strong>Watch the mixture.</strong>
+        Add up to ${settings.capacity} ingredients.
+        Brew accepts ±${settings.tolerance} beyond each target range.
+      </li>
+
+      <li>
+        <strong>Brew your potion.</strong>
+        Success earns ${settings.scorePerBrew} points and up to
+        ${settings.timeBonus / 1000} seconds.
+        Failure costs one life.
+      </li>
+
+      <li>
+        <strong>Keep the magic alive.</strong>
+        ${difficultyName(state.difficulty)} begins with
+        ${settings.startTime / 1000} seconds and
+        ${settings.lives} lives.
+      </li>
+    </ol>
+
+    <p class="fine-print">
+      Difficulty can only be changed from the menu before a run begins.
+      Pause freezes the clock.
+    </p>
+
+    <div class="dialog-actions">${back}</div>`;
+  if (page === 'menu') {
+    const difficultyButtons = DIFFICULTIES.map((difficulty) => {
+      const optionSettings = DIFFICULTY_SETTINGS[difficulty];
+      const selected = difficulty === state.difficulty;
+
+      return `
+      <button
+        class="secondary difficulty-option${selected ? ' selected' : ''}"
+        data-difficulty="${difficulty}"
+        aria-pressed="${selected}"
+      >
+        <strong>${difficultyName(difficulty)}</strong>
+        <span>
+          ${optionSettings.ingredientCount} ingredients ·
+          ${optionSettings.lives} lives ·
+          ${optionSettings.startTime / 1000}s ·
+          ±${optionSettings.tolerance}
+        </span>
+      </button>
+    `;
+    }).join('');
+
+    const continueButton = canContinue
+      ? '<button class="primary" data-action="continue">Continue Game</button>'
+      : '';
+
+    return `
+    ${heading('THE MIDNIGHT POTION LAB', 'Welcome, alchemist.')}
+
+    <p>
+      Turn a handful of curious ingredients into something extraordinary.
+    </p>
+
+    <div class="menu-rule">
+      <span>
+        Level 2 · ${difficultyName(state.difficulty)}
+      </span>
+
+      <span>
+        ${settings.ingredientCount} ingredients ·
+        ${settings.lives} lives ·
+        ${settings.startTime / 1000}s
+      </span>
+    </div>
+
+    <div class="difficulty-picker" aria-label="Choose difficulty">
+      ${difficultyButtons}
+    </div>
+
+
+
+    <div class="dialog-actions vertical">
+  ${continueButton}
+
+  <button class="primary" data-action="start">
+    Start New Game
+  </button>
+
+      <button class="secondary" data-action="leaderboard">
+        Leaderboard
+      </button>
+
+      <button class="secondary" data-action="help">
+        How to Play
+      </button>
+
+      <button class="text-button" data-action="close">
+        Back to the lab
+      </button>
+    </div>
+  `;
+  }
   if (page === 'game-over') {
     const entry =
       !submitted && qualifies(board.entries, state.score)
@@ -30,8 +144,64 @@ export function dialogMarkup(
   const rows = board.entries
     .map(
       (entry, index) =>
-        `<tr><td>${String(index + 1).padStart(2, '0')}</td><td>${escapeHtml(entry.name)}</td><td>${entry.score}</td><td>${formatDate(entry.date)}</td></tr>`,
+        `<tr>
+        <td>${String(index + 1).padStart(2, '0')}</td>
+        <td>${escapeHtml(entry.name)}</td>
+        <td>${difficultyName(state.difficulty)}</td>
+        <td>${entry.score}</td>
+        <td>${formatDate(entry.date)}</td>
+      </tr>`,
     )
     .join('');
-  return `${heading('THE FINEST IN THE LAB', 'Leaderboard')}<p>Top 10 · Medium · Earlier results win ties.</p><div class="table-scroll"><table><caption class="sr-only">Top ten scores</caption><thead><tr><th scope="col">Rank</th><th scope="col">Name</th><th scope="col">Score</th><th scope="col">Date</th></tr></thead><tbody>${rows || '<tr><td colspan="4" class="empty-table">No potions in the history books yet.<br>Your first adventure starts here.</td></tr>'}</tbody></table></div><p class="storage-warning">${escapeHtml(board.warning)}</p><div class="dialog-actions">${back}<button class="text-button" data-action="clear" ${board.entries.length === 0 ? 'disabled' : ''}>Clear Leaderboard</button></div>`;
+
+  return `${heading('THE FINEST IN THE LAB', 'Leaderboard')}
+  <p>
+    Top 10 · ${difficultyName(state.difficulty)} · Earlier results win ties.
+  </p>
+
+  <div class="table-scroll">
+    <table>
+      <caption class="sr-only">
+        Top ten ${difficultyName(state.difficulty)} scores
+      </caption>
+
+      <thead>
+        <tr>
+          <th scope="col">Rank</th>
+          <th scope="col">Name</th>
+          <th scope="col">Difficulty</th>
+          <th scope="col">Score</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        ${
+          rows ||
+          `<tr>
+            <td colspan="5" class="empty-table">
+              No potions in the history books yet.<br>
+              Your first adventure starts here.
+            </td>
+          </tr>`
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="storage-warning">
+    ${escapeHtml(board.warning)}
+  </p>
+
+  <div class="dialog-actions">
+    ${back}
+
+    <button
+      class="text-button"
+      data-action="clear"
+      ${board.entries.length === 0 ? 'disabled' : ''}
+    >
+      Clear Leaderboard
+    </button>
+  </div>`;
 }
