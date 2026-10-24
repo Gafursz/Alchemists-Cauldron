@@ -974,6 +974,33 @@ dialog .eyebrow {
   font-size: 11px;
   color: #c3b6d6;
 }
+.difficulty-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.difficulty-option {
+  display: grid;
+  gap: 5px;
+  text-align: left;
+}
+
+.difficulty-option strong {
+  font-size: 13px;
+}
+
+.difficulty-option span {
+  font-size: 9px;
+  line-height: 1.45;
+  color: #a597b4;
+}
+
+.difficulty-option.selected {
+  border-color: #f17da8;
+  box-shadow: 0 0 0 1px #f17da833;
+}
 .help-list {
   padding-left: 22px;
   color: #c9bfd6;
