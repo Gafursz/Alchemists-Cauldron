@@ -1,86 +1,352 @@
-# Alchemist's Cauldron — Story 2
+# Alchemist's Cauldron
 
-**Author: Gafursz** · **Design: Midnight Potion Lab**
+**Author: Gafursz**
 
-A playable Level 1 alchemy game written in vanilla TypeScript, CSS and inline SVG. Combine ingredients, match three target ranges and brew potions before time, lives or stock run out.
+A responsive browser game built with vanilla TypeScript, CSS and inline SVG for the RS School qualifying stage.
 
-## Agreed project mapping
+Mix ingredients, manage limited stock, match recipe parameters, trigger chemical reactions and brew potions before time or lives run out.
 
-| Branch                       | Scope                                                 | Review PR                 |
-| ---------------------------- | ----------------------------------------------------- | ------------------------- |
-| `story-1`                    | Precondition: repository, tooling and technical setup | `story-1` → `main`        |
-| **`story-2` (this package)** | **Level 1: US 1.1–1.6, the basic playable game**      | **`story-2` → `story-1`** |
-| `story-3`                    | Level 2 and Level 3 additions                         | `story-3` → `story-2`     |
+## Live Demo
 
-This is the project's agreed branch plan. The assignment's generic branch instructions do not explicitly map all four development stages to three branches. User stories such as US 1.2 are feature identifiers, not branch names. Gameplay difficulties (Easy/Medium/Hard) are separate from development levels.
+**GitHub Pages:**  
+https://gafursz.github.io/Alchemists-Cauldron/
 
-The remote `story-2` baseline was setup commit `36522ac61794685a62bfe6cb632cbc1636d7c278`. This package integrates the earlier Level 1 implementation into its correctly named Story 2 delivery, adds Windows line-ending configuration and improves keyboard focus. It does not include Level 2 difficulty selection or save/continue.
+## Features
 
-## Run locally
+The project implements the complete **Level 3 — Full Game** scope.
 
-Use Node.js 22.12+ in the 22.x line, or a newer supported LTS release, with npm.
+### Core Gameplay
+
+- Random recipe selection
+- Limited ingredient stock
+- Temperature, Density and Magic Power parameters
+- Recipe target ranges and tolerance
+- Score system
+- Countdown timer
+- Lives
+- Pause and resume
+- Automatic pause when the browser tab becomes hidden
+- Game-over flow
+- Top-10 leaderboard
+- Custom in-app dialogs
+
+### Difficulty Modes
+
+Three difficulty levels are available:
+
+| Difficulty | Ingredients | Capacity |  Time | Lives | Tolerance | Score | Time Bonus | Reactions |
+| ---------- | ----------: | -------: | ----: | ----: | --------: | ----: | ---------: | --------: |
+| Easy       |           4 |        4 | 180 s |     5 |       ±12 |   100 |      +15 s |         0 |
+| Medium     |           6 |        4 | 150 s |     3 |        ±8 |   200 |      +10 s |         2 |
+| Hard       |           8 |        5 | 150 s |     3 |        ±5 |   300 |       +5 s |         3 |
+
+The selected difficulty controls shelf size, cauldron capacity, time, lives, tolerance, score rewards, time bonuses, recipes and reactions.
+
+### Save & Continue
+
+The current unfinished run is automatically saved to `localStorage`.
+
+Saved data includes:
+
+- difficulty
+- score
+- remaining time
+- lives
+- active recipe
+- cauldron ingredients
+- shelf stock
+- game status
+
+When a valid unfinished save exists, **Continue Game** restores it in a paused state.
+
+Broken saved data is validated and removed safely instead of crashing the application.
+
+### Drag & Drop
+
+Ingredients can be:
+
+- clicked normally
+- operated with the keyboard
+- dragged into the cauldron
+
+The cauldron highlights during a valid drag.
+
+Dragging is blocked when:
+
+- the game is paused
+- ingredient stock is 0
+- the cauldron is full
+
+### Ingredient Tooltips
+
+Level 3 ingredient cards show only:
+
+- icon
+- name
+- stock
+
+Hovering or focusing a card displays:
+
+- Temperature
+- Density
+- Magic Power
+
+Positive values use `+` and negative values use `−`.
+
+The tooltip automatically changes position near the right and bottom edges of the viewport.
+
+### Chemical Reactions
+
+Easy has no reactions, Medium enables two and Hard enables three.
+
+Implemented reactions:
+
+#### Bubbling
+
+**Fairy Dust + Caustic Acid**
+
+- Magic Power +50%
+- removes 10 seconds once
+
+#### Solar Frost
+
+**Dragon Tears + Frost Lotus**
+
+- Temperature becomes 0
+- Density increases by 20%
+
+#### Volatile Mix
+
+**Phoenix Feather + Essence of the Void**
+
+- loses 1 life
+- clears the cauldron
+
+Reactions are stored in a typed reaction configuration and fire only when they change from inactive to active.
+
+### Pour Out
+
+The **Pour Out** action:
+
+- clears the whole cauldron
+- costs 10 seconds
+- does not remove a life
+- does not refund ingredient stock
+- is disabled when the cauldron is empty
+
+### Visual Feedback
+
+The game includes CSS-based visual effects:
+
+- successful brew animation
+- failed brew animation
+- explosion effect
+- screen shake
+- floating ingredient icons
+- animated potion
+- smooth parameter bars
+- target-zone glow
+- low-time warning
+
+Decorative animations are implemented with CSS rather than JavaScript timers.
+
+### Keyboard Controls
+
+During an active game:
+
+| Key   | Action                           |
+| ----- | -------------------------------- |
+| `1–8` | Add the corresponding ingredient |
+| `B`   | Brew Potion                      |
+| `O`   | Pour Out                         |
+| `P`   | Pause                            |
+
+Game shortcuts are disabled on the menu, pause screen and game-over screen.
+
+Shortcuts are also ignored while the player is typing.
+
+Normal browser keyboard behavior such as Tab, Enter and Space continues to work on buttons and form controls.
+
+## Ingredient Catalogue
+
+| Ingredient          | Temperature | Density | Magic Power |
+| ------------------- | ----------: | ------: | ----------: |
+| Dragon Tears        |         +25 |      +8 |         +10 |
+| Fairy Dust          |         +12 |      +9 |         +12 |
+| Frost Lotus         |         −18 |      +4 |         +14 |
+| Mandrake Root       |          −5 |     +20 |          +8 |
+| Caustic Acid        |         +10 |     +14 |         +22 |
+| Essence of the Void |         −20 |     −10 |         +40 |
+| Phoenix Feather     |         +50 |     −10 |         +30 |
+| Toad Slime          |          +5 |     +30 |           0 |
+
+Each available ingredient starts a new game with a random stock from **2 to 15**.
+
+Using an ingredient reduces its stock by one. Used ingredients are never refunded after Brew or Pour Out.
+
+## Game Over
+
+A run ends when:
+
+- time reaches 0
+- all lives are lost
+- the shelf is empty and the cauldron is empty
+
+A qualifying score can be saved to the difficulty-specific Top-10 leaderboard.
+
+Leaderboard names accept 2–15 characters using letters, digits, spaces, `_` and `-`.
+
+Earlier results stay ahead when scores are equal.
+
+## Responsive Design
+
+The game is designed for the required range of **375 px to 1920 px**.
+
+The layout adapts for:
+
+- desktop
+- landscape tablet
+- portrait tablet
+- mobile
+
+Desktop and supported tablet layouts are optimized so the main gameplay sections fit within the available viewport without unnecessary page scrolling.
+
+## Technologies
+
+- TypeScript
+- HTML
+- CSS
+- Inline SVG
+- Vite
+- ESLint
+- Prettier
+- Husky
+- GitHub Actions
+- GitHub Pages
+
+No frontend framework, CSS framework, game engine or runtime UI library is used.
+
+## Project Structure
+
+```text
+src/
+├── assets/
+├── data/
+│   ├── difficulty.ts
+│   ├── ingredients.ts
+│   ├── reactions.ts
+│   └── recipes.ts
+├── logic/
+│   ├── brewing.ts
+│   └── timer.ts
+├── state/
+│   └── game.ts
+├── storage/
+│   ├── leaderboard.ts
+│   └── save.ts
+├── styles/
+│   └── style.css
+├── ui/
+│   ├── app.ts
+│   ├── art.ts
+│   ├── bars.ts
+│   ├── dialogs.ts
+│   ├── dom.ts
+│   ├── drag.ts
+│   └── tooltip.ts
+└── main.ts
+```
+
+Game rules and state logic are kept separate from DOM rendering.
+
+## Run Locally
+
+Requirements:
+
+- Node.js 22 or newer
+- npm
+
+Clone the repository and install dependencies:
 
 ```bash
 npm ci
+```
+
+Start the development server:
+
+```bash
 npm run dev
 ```
 
-- `npm ci` installs the exact locked development dependencies into `node_modules`. It also initializes Husky when run inside a Git repository. It does not commit or push files. Run it from the folder containing `package.json`.
-- `npm run dev` starts Vite. Open the local URL it prints (normally http://localhost:5173). Keep the terminal open while playing; Ctrl+C stops the server. It does not modify Git history.
+Open the local URL printed by Vite.
 
-Do not double-click `index.html`; the project uses TypeScript modules and needs an HTTP server. Extract into a separate folder first so you can inspect it before integrating it into your existing repository.
+## Quality Checks
 
-## Controls and game rules
+Run the complete project check:
 
-- **Start Game:** generates six Medium ingredient stocks, each independently 2–15, chooses a random Medium recipe and starts at 150 seconds with three lives.
-- **Ingredient card:** click/tap, or focus with Tab and activate with Enter/Space. T, D and M show Temperature, Density and Magic Power. Every addition consumes one portion. Repeat ingredients are allowed; addition order is preserved.
-- **Cauldron:** holds up to four ingredients. Full capacity blocks the shelf. A zero-stock card keeps its position and zero badge but loses its icon and cannot be focused or activated.
-- **Bars:** show exact ingredient sums. Temperature and Density have centered zero lines and support negative values. Bright green zones and glow indicate the literal recipe ranges. Brewing also accepts ±8 outside each target range.
-- **Brew Potion:** enabled with at least one ingredient. Success gives 200 points and up to 10 seconds, clears the mixture and selects a new recipe. Failure removes one life, clears the mixture and keeps the recipe. Ingredients are never refunded or replenished after brewing.
-- **Pause:** stops the clock and conceals/blocks the field. Resume continues the same run. Switching away from the tab pauses automatically. Exit to Menu abandons the run.
-- **Game over:** occurs at zero time, zero lives, or when both shelf and cauldron are empty. Play again starts fresh.
-- **Leaderboard:** qualifying results accept a 2–15 character name using letters, digits, spaces, underscores and hyphens. Top 10 persists in localStorage; earlier results win score ties. Clearing requires an in-app confirmation.
+```bash
+npm run check
+```
 
-Reloading abandons an unfinished run in this milestone. Only the leaderboard persists. Auto-save and Continue Game belong to Story 3 / Level 2.
+This runs:
 
-## Completed scope
+1. TypeScript type checking
+2. ESLint
+3. Prettier validation
+4. Vite production build
 
-| User story | Delivered                                                                                                       |
-| ---------- | --------------------------------------------------------------------------------------------------------------- |
-| US 1.1     | Full eight-item catalogue, six active shelf ingredients, random limited stock, ordered cauldron, capacity rules |
-| US 1.2     | Pure sums, negative values, signed bars, current markers, target zones, transitions and in-range glow           |
-| US 1.3     | All 20 recipes, Medium filtering, recipe panel/counter, success/failure checks and rewards                      |
-| US 1.4     | Timestamp-derived clock, shrinking time bar, urgent pulse, lives, ending reasons and replay                     |
-| US 1.5     | Manual/hidden-tab pause, frozen time, hidden/inert field, resume and exit                                       |
-| US 1.6     | Validated local Top-10, name entry, tie ordering, dates, confirmed clearing and storage error handling          |
+Format the project with:
 
-All interface controls are DOM elements. Artwork is separate inline SVG; no flattened generated screenshot, framework, game engine, icon library or runtime animation package is used. Layout adapts to 375–1920 px, and CSS respects reduced-motion preferences.
+```bash
+npm run format
+```
 
-## Checks and production build
+Build the production version with:
 
-| Command                | Purpose / expected result                                                                         | Git impact                                                 |
-| ---------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| `npm run check`        | Runs type checking, ESLint, Prettier check and production build; exits successfully when all pass | Does not commit; regenerates ignored `dist/`               |
-| `npm test`             | Compiles source into ignored `.test-build/` and runs Node's built-in regression tests             | No commits or tracked generated files                      |
-| `npm run format`       | Rewrites supported source/config/docs with Prettier and LF endings                                | May modify tracked files; review changes before committing |
-| `npm run format:check` | Reports formatting errors without rewriting files                                                 | Read-only                                                  |
-| `npm run build`        | Type-checks and builds the browser application into `dist/`                                       | Generated output is ignored                                |
-| `npm run preview`      | Serves the existing production build over HTTP                                                    | No commits; requires a build first                         |
+```bash
+npm run build
+```
 
-The ZIP includes `dist/` for convenience, but `.gitignore` excludes it from commits. Dependencies and `.git` history are not included. When installing the extracted ZIP outside a Git repository, Husky may report that `.git` is unavailable; initialize it by running `npm ci` inside your existing repository after integration.
+Preview the production build locally with:
 
-## Windows line endings
+```bash
+npm run preview
+```
 
-`.gitattributes` declares LF endings for text files, `.prettierrc.json` explicitly sets `endOfLine: lf`, and `.editorconfig` asks editors to save UTF-8/LF files. This makes Git Bash/Windows and other environments agree. Do not change your global Git configuration for this package. Instructions for reviewing and normalizing existing files are in `docs/INTEGRATION.md`.
+## RS School Scope
 
-## Explanation and next steps
+Implemented cumulative scope:
 
-- `docs/IMPLEMENTATION.md`: what changed, why, file responsibilities and behavior.
-- `docs/INTEGRATION.md`: safe integration, every terminal command explained, and branch/PR targets.
-- `docs/VERIFICATION.md`: actual checks and known delivery limits.
+- Precondition — repository and technical setup
+- Level 1 — US 1.1 to US 1.6
+- Level 2 — US 2.1 and US 2.2
+- Level 3 — US 3.1 to US 3.6
 
-[RS School assignment](https://github.com/rolling-scopes-school/qualifying-stage/blob/main/tasks/game-alchemists-cauldron/README.md)
+### Level 3
 
-Story 2 has been pushed to GitHub and the final `story-2` → `story-1`
-review Pull Request is open and intentionally unmerged. Public deployment
-and RS App submission remain to be completed.
+- US 3.1 — Drag & Drop
+- US 3.2 — Ingredient Tooltip
+- US 3.3 — Chemical Reactions
+- US 3.4 — Pour Out
+- US 3.5 — Visual Feedback
+- US 3.6 — Keyboard Shortcuts
+
+## Repository Workflow
+
+Development uses story and feature branches.
+
+Final story Pull Requests are intentionally left open for RS School cross-check:
+
+```text
+story-1 → main
+story-2 → story-1
+story-3 → story-2
+```
+
+Feature Pull Requests are merged into their corresponding story branch.
+
+## Author
+
+**Gafursz**
+
+Built for the RS School qualifying stage.

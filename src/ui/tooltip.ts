@@ -1,6 +1,6 @@
 import { INGREDIENTS } from '../data/ingredients.js';
 import type { GameState } from '../types.js';
-import { escapeHtml, signed } from './dom.js';
+import { element, escapeHtml, signed } from './dom.js';
 
 export function installTooltip(root: HTMLElement, state: () => GameState): void {
   const tooltip = document.createElement('div');
@@ -9,7 +9,7 @@ export function installTooltip(root: HTMLElement, state: () => GameState): void 
   tooltip.setAttribute('role', 'tooltip');
   tooltip.hidden = true;
 
-  root.append(tooltip);
+  element('#play-field', root).append(tooltip);
 
   function hide(): void {
     tooltip.hidden = true;
