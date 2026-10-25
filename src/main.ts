@@ -230,6 +230,52 @@ dialog.addEventListener('submit', (event) => {
   open('game-over');
 });
 
+document.addEventListener('keydown', (event) => {
+  const target = event.target;
+
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement ||
+    (target instanceof HTMLElement && target.isContentEditable)
+  ) {
+    return;
+  }
+
+  if (game.state.status !== 'playing') return;
+
+  const key = event.key.toLowerCase();
+
+  if (/^[1-8]$/.test(key)) {
+    const cards = root.querySelectorAll<HTMLButtonElement>('[data-ingredient]:not([hidden])');
+
+    const card = cards[Number(key) - 1];
+
+    if (card && !card.disabled) {
+      event.preventDefault();
+      card.click();
+    }
+
+    return;
+  }
+
+  if (key === 'b') {
+    event.preventDefault();
+    game.brew();
+  }
+
+  if (key === 'o') {
+    event.preventDefault();
+    game.pourOut();
+  }
+
+  if (key === 'p') {
+    event.preventDefault();
+    game.pause();
+    open('pause');
+  }
+});
+
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && game.state.status === 'playing') {
     game.pause();
