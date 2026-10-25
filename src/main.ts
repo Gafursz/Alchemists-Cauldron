@@ -8,6 +8,8 @@ import { renderApp, updateApp } from './ui/app.js';
 import { dialogMarkup } from './ui/dialogs.js';
 import type { DialogPage } from './ui/dialogs.js';
 import { element } from './ui/dom.js';
+import { installDragDrop } from './ui/drag.js';
+import { installTooltip } from './ui/tooltip.js';
 
 const root = element<HTMLDivElement>('#app');
 renderApp(root);
@@ -230,6 +232,9 @@ document.addEventListener('visibilitychange', () => {
     open('pause');
   }
 });
+
+installDragDrop(root, game);
+installTooltip(root, () => game.state);
 
 window.setInterval(() => game.tick(), 100);
 
