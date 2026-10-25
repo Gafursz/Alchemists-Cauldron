@@ -127,6 +127,10 @@ root.addEventListener('click', (event) => {
       game.brew();
       break;
 
+    case 'pour':
+      game.pourOut();
+      break;
+
     case 'pause':
       game.pause();
 

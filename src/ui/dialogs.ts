@@ -29,7 +29,7 @@ export function dialogMarkup(
 
       <li>
         <strong>Add ingredients.</strong>
-        Click a card. T, D and M show its effects.
+        Click or drag a card. Hover to see its T, D and M effects.
         Each addition spends one portion.
       </li>
 
@@ -45,6 +45,12 @@ export function dialogMarkup(
         ${settings.timeBonus / 1000} seconds.
         Failure costs one life.
       </li>
+
+      <li>
+  <strong>Watch for reactions.</strong>
+  Medium has 2 possible reactions and Hard has 3.
+  Pour Out clears the cauldron for 10 seconds without losing a life.
+</li>
 
       <li>
         <strong>Keep the magic alive.</strong>
@@ -95,7 +101,7 @@ export function dialogMarkup(
 
     <div class="menu-rule">
       <span>
-        Level 2 · ${difficultyName(state.difficulty)}
+        Level 3 · ${difficultyName(state.difficulty)}
       </span>
 
       <span>
