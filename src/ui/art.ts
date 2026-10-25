@@ -11,6 +11,12 @@ const drawings: Record<string, string> = {
     '<path d="M40 17h20v26l24 34q10 17-10 17H26Q6 94 16 77l24-34Z" fill="#596d60" stroke="#d7f6bd" stroke-width="2"/><path d="m30 64-12 17q-4 9 9 9h46q13 0 9-9L70 64q-20 8-40 0Z" fill="#b9e875"/><rect x="36" y="11" width="28" height="10" rx="3" fill="#b48c70"/><path d="M43 30v15L27 69" stroke="#f0ffe0" stroke-width="4" stroke-linecap="round"/><circle cx="58" cy="77" r="5" fill="#e8ffb5"/><circle cx="40" cy="82" r="3" fill="#f3ffd8"/><circle cx="56" cy="56" r="3" fill="#d0fa9c"/>',
   'essence-of-the-void':
     '<circle cx="50" cy="51" r="34" fill="#412770"/><circle cx="50" cy="51" r="22" fill="#13102f"/><g fill="none" stroke-linecap="round"><path d="M17 56C4 15 69 0 82 35S52 102 25 79" stroke="#a48aff" stroke-width="7"/><path d="M73 21C23 5 6 70 40 84s62-22 40-42" stroke="#7d58d9" stroke-width="6"/><path d="M31 68c-18-30 33-48 37-16" stroke="#d0b1ff" stroke-width="4"/></g><g fill="#e5caff"><circle cx="18" cy="23" r="2"/><circle cx="85" cy="78" r="3"/><path d="m84 8 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/></g>',
+
+  'phoenix-feather':
+    '<path d="M73 10C46 18 25 41 24 70c0 11 5 20 13 25 1-12 6-22 15-30-4 11-4 21-1 30 8-5 14-14 18-25 6-18 7-39 4-60Z" fill="#f47b49" stroke="#ffd29a" stroke-width="2"/><path d="M68 18C48 29 36 45 32 67c9-10 18-16 29-20-9 8-15 17-20 28 12-7 21-16 27-27 5-10 7-20 6-30Z" fill="#ffb45e"/><path d="M29 96C42 75 53 56 69 31" fill="none" stroke="#ffe0ad" stroke-width="4" stroke-linecap="round"/><path d="m72 15 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="#fff0bd"/>',
+
+  'toad-slime':
+    '<path d="M18 66c0-15 13-26 30-26 5-13 24-13 29 1 11 3 18 13 18 24 0 18-16 29-39 29S18 84 18 66Z" fill="#75c98d" stroke="#c7f5ce" stroke-width="2"/><path d="M28 68c6-7 14-8 21-4 8-7 20-5 24 3 7-2 13 1 16 6-4 13-17 19-34 19-16 0-27-6-31-16 0-3 2-6 4-8Z" fill="#9ee6a9"/><circle cx="40" cy="54" r="5" fill="#d9ffd5"/><circle cx="67" cy="57" r="4" fill="#d9ffd5"/><circle cx="54" cy="74" r="5" fill="#6bb77e"/><circle cx="35" cy="80" r="3" fill="#c9f7c3"/><circle cx="75" cy="76" r="3" fill="#c9f7c3"/>',
 };
 export function ingredientArt(id: string): string {
   return `<svg viewBox="0 0 100 104" aria-hidden="true" focusable="false">${drawings[id] ?? '<circle cx="50" cy="50" r="30" fill="currentColor"/>'}</svg>`;

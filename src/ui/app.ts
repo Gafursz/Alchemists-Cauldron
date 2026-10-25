@@ -18,7 +18,10 @@ export function renderApp(root: HTMLElement): void {
     <main id="play-field" class="game-grid">
       <section class="shelf-panel panel" aria-labelledby="shelf-title"><div class="panel-heading"><h2 id="shelf-title">Your ingredients</h2><span class="muted">THE SHELF</span></div>
         <div id="shelf" class="shelf-grid"></div><p id="shelf-note" class="panel-note">Your shelf fills when a new game begins.</p></section>
-      <section class="brew-panel" aria-label="Cauldron and brewing"><div id="drop-zone" class="scene" aria-label="Drop an ingredient into the cauldron"><div class="arch"><span class="moon"></span><span class="star star-one">✦</span><span class="star star-two">✧</span><span class="star star-three">·</span><div class="window-line"></div></div><div class="scene-halo"></div><div class="candle candle-one"></div><div class="candle candle-two"></div><div id="pot" class="pot">${cauldronArt}</div><span class="scene-spark spark-one">✧</span><span class="scene-spark spark-two">✦</span></div>
+      <section class="brew-panel" aria-label="Cauldron and brewing"><div id="drop-zone" class="scene" aria-label="Drop an ingredient into the cauldron"><div class="arch"><span class="moon"></span><span class="star star-one">✦</span><span class="star star-two">✧</span><span class="star star-three">·</span><div class="window-line"></div></div><div class="scene-halo"></div><div class="candle candle-one"></div><div class="candle candle-two"></div><div id="pot" class="pot">
+  ${cauldronArt}
+  <div id="floating-ingredients" class="floating-ingredients" aria-hidden="true"></div>
+</div><span class="scene-spark spark-one">✧</span><span class="scene-spark spark-two">✦</span></div>
         <div class="mixture-wrap"><p id="mixture-label" class="mixture-label">Your cauldron is waiting</p><ol id="mixture" class="mixture" aria-label="Ingredients in addition order"></ol></div>
         <div class="brew-actions">
   <button id="brew" class="primary brew-button" data-action="start"><span aria-hidden="true">✧</span> <span id="brew-text">Start Game</span></button>
@@ -128,6 +131,13 @@ export function updateApp(state: GameState): void {
       : `<li class="mixture-slot" aria-label="Empty slot ${index + 1}"><span aria-hidden="true">✧</span></li>`;
   }).join('');
 
+  element('#floating-ingredients').innerHTML = state.ingredients
+    .map(
+      (ingredient, index) =>
+        `<span style="--float-index:${index}">${ingredientArt(ingredient.id)}</span>`,
+    )
+    .join('');
+
   const brew = element<HTMLButtonElement>('#brew');
   brew.dataset.action = menu ? 'start' : 'brew';
   brew.disabled = !menu && (!playing || state.ingredients.length === 0);
@@ -145,10 +155,19 @@ export function updateApp(state: GameState): void {
   pot.classList.toggle('has-ingredients', state.ingredients.length > 0);
   if (state.outcome !== lastOutcome) {
     pot.classList.remove('brew-success', 'brew-failure');
+    field.classList.remove('brew-failure');
+
     if (state.outcome) {
       void pot.offsetWidth;
+
       pot.classList.add(`brew-${state.outcome}`);
+
+      if (state.outcome === 'failure') {
+        void field.offsetWidth;
+        field.classList.add('brew-failure');
+      }
     }
+
     lastOutcome = state.outcome;
   }
   updateBars(

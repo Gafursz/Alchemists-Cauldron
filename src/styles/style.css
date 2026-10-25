@@ -502,6 +502,54 @@ a {
   bottom: -24px;
   width: 114%;
 }
+
+.floating-ingredients {
+  position: absolute;
+  left: 31%;
+  right: 31%;
+  top: 47%;
+  bottom: 22%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.floating-ingredients span {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  animation: ingredient-float 2.2s ease-in-out infinite;
+  animation-delay: calc(var(--float-index) * -0.3s);
+}
+
+.floating-ingredients span:nth-child(1) {
+  left: 5%;
+  top: 45%;
+}
+
+.floating-ingredients span:nth-child(2) {
+  left: 30%;
+  top: 20%;
+}
+
+.floating-ingredients span:nth-child(3) {
+  left: 58%;
+  top: 42%;
+}
+
+.floating-ingredients span:nth-child(4) {
+  left: 75%;
+  top: 12%;
+}
+
+.floating-ingredients span:nth-child(5) {
+  left: 42%;
+  top: 58%;
+}
+
+.floating-ingredients svg {
+  width: 100%;
+  height: 100%;
+}
 .cauldron-art {
   display: block;
   width: 100%;
@@ -950,12 +998,30 @@ a {
 .urgent output {
   animation: urgent 1s ease-in-out infinite;
 }
-.brew-success {
+.pot.brew-success {
   animation: success 0.7s ease-out;
 }
-.brew-failure {
+
+.pot.brew-failure {
   animation: failure 0.5s ease-out;
 }
+
+.game-grid.brew-failure {
+  animation: screen-shake 0.45s ease-out;
+}
+
+.pot.brew-failure::after {
+  content: '✦';
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  z-index: 4;
+  font-size: 80px;
+  transform: translate(-50%, -50%);
+  animation: explosion 0.5s ease-out;
+  pointer-events: none;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -1195,6 +1261,35 @@ td:last-child {
     filter: drop-shadow(0 0 12px #f3759a);
   }
 }
+@keyframes ingredient-float {
+  50% {
+    transform: translateY(-8px) rotate(5deg);
+  }
+}
+@keyframes screen-shake {
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+
+  40%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes explosion {
+  from {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 1;
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
 @media (min-width: 1450px) and (min-height: 950px) {
   .app-shell {
     padding: 0 50px;
