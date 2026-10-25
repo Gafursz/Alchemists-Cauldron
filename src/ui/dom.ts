@@ -15,5 +15,7 @@ export function escapeHtml(value: string): string {
   );
 }
 export function signed(value: number): string {
-  return value > 0 ? `+${value}` : String(value);
+  if (value > 0) return `+${value}`;
+  if (value < 0) return `−${Math.abs(value)}`;
+  return '0';
 }
