@@ -315,6 +315,42 @@ a {
   box-shadow: 0 0 18px #ac83ef16;
   transform: translateY(-2px);
 }
+.ingredient-card[draggable='true'] {
+  cursor: grab;
+}
+
+.ingredient-card.dragging {
+  opacity: 0.45;
+}
+
+.pot.drop-ready {
+  filter: drop-shadow(0 0 18px #7de7e6);
+}
+
+.ingredient-tooltip {
+  position: fixed;
+  z-index: 1000;
+  display: grid;
+  gap: 5px;
+  min-width: 150px;
+  padding: 10px 12px;
+  border: 1px solid #8e7eb4;
+  border-radius: 10px;
+  background: #1d1b34;
+  box-shadow: 0 8px 25px #0008;
+  color: #eee6fa;
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.ingredient-tooltip strong {
+  color: #a2f0df;
+}
+
+.ingredient-tooltip[hidden] {
+  display: none;
+}
+
 .ingredient-art {
   display: flex;
   width: 65px;

@@ -14,11 +14,11 @@ export function renderApp(root: HTMLElement): void {
       <div id="lives" class="lives" aria-label="No active game"></div></div>
       <nav class="toolbar" aria-label="Game controls"><button class="icon-button" data-action="help"><span aria-hidden="true">?</span>Help</button><button class="icon-button" data-action="menu"><span aria-hidden="true">☰</span>Menu</button><button class="icon-button" id="pause" data-action="pause" hidden><span aria-hidden="true">Ⅱ</span>Pause</button></nav>
     </header>
-    <div class="page-intro"><div><p class="eyebrow">THE MIDNIGHT POTION LAB</p><h1>A little magic starts here.</h1></div><span class="difficulty-tag"><span></span> Medium <i>·</i> Level 2</span></div>
+    <div class="page-intro"><div><p class="eyebrow">THE MIDNIGHT POTION LAB</p><h1>A little magic starts here.</h1></div><span class="difficulty-tag"><span></span> Medium <i>·</i> Level 3</span></div>
     <main id="play-field" class="game-grid">
       <section class="shelf-panel panel" aria-labelledby="shelf-title"><div class="panel-heading"><h2 id="shelf-title">Your ingredients</h2><span class="muted">THE SHELF</span></div>
         <div id="shelf" class="shelf-grid"></div><p id="shelf-note" class="panel-note">Your shelf fills when a new game begins.</p></section>
-      <section class="brew-panel" aria-label="Cauldron and brewing"><div class="scene"><div class="arch"><span class="moon"></span><span class="star star-one">✦</span><span class="star star-two">✧</span><span class="star star-three">·</span><div class="window-line"></div></div><div class="scene-halo"></div><div class="candle candle-one"></div><div class="candle candle-two"></div><div id="pot" class="pot">${cauldronArt}</div><span class="scene-spark spark-one">✧</span><span class="scene-spark spark-two">✦</span></div>
+      <section class="brew-panel" aria-label="Cauldron and brewing"><div id="drop-zone" class="scene" aria-label="Drop an ingredient into the cauldron"><div class="arch"><span class="moon"></span><span class="star star-one">✦</span><span class="star star-two">✧</span><span class="star star-three">·</span><div class="window-line"></div></div><div class="scene-halo"></div><div class="candle candle-one"></div><div class="candle candle-two"></div><div id="pot" class="pot">${cauldronArt}</div><span class="scene-spark spark-one">✧</span><span class="scene-spark spark-two">✦</span></div>
         <div class="mixture-wrap"><p id="mixture-label" class="mixture-label">Your cauldron is waiting</p><ol id="mixture" class="mixture" aria-label="Ingredients in addition order"></ol></div>
         <button id="brew" class="primary brew-button" data-action="start"><span aria-hidden="true">✧</span> <span id="brew-text">Start Game</span></button>
         <p id="feedback" class="feedback" role="status" aria-live="polite">A little curiosity. A touch of magic.</p>
@@ -35,7 +35,7 @@ export function renderApp(root: HTMLElement): void {
       ingredient,
     ) => `<button class="ingredient-card" data-ingredient="${ingredient.id}" disabled style="--ingredient-color:${ingredient.color}">
     <span class="stock-badge" aria-hidden="true"><small>Stock</small><b>0</b></span><span class="ingredient-art">${ingredientArt(ingredient.id)}</span><span class="ingredient-name">${ingredient.name}</span>
-    <span class="ingredient-stats"><span><small>T</small>${signed(ingredient.temperature)}</span><span><small>D</small>${signed(ingredient.density)}</span><span><small>M</small>${signed(ingredient.magicPower)}</span></span></button>`,
+    </button>`,
   ).join('');
 }
 let lastSignature = '';
@@ -91,6 +91,7 @@ export function updateApp(state: GameState): void {
 
     const stock = state.stock[ingredient.id] ?? 0;
     button.disabled = !playing || stock === 0 || state.ingredients.length >= settings.capacity;
+    button.draggable = !button.disabled;
     button.classList.toggle('empty', stock === 0);
     button.classList.toggle('unstarted', menu);
     element('.stock-badge b', button).textContent = String(stock);
@@ -101,7 +102,7 @@ export function updateApp(state: GameState): void {
   });
   element('#shelf-note').textContent = menu
     ? 'Your shelf fills when a new game begins.'
-    : 'Each addition uses one portion. Ingredients are not refunded.';
+    : 'Click or drag an ingredient into the cauldron.';
   element('#recipe-name').textContent = state.recipe?.name ?? 'A mystery awaits';
   const ranges = element('#recipe-ranges').querySelectorAll('strong');
   (['temperature', 'density', 'magicPower'] as const).forEach((key, index) => {
