@@ -31,7 +31,7 @@ export function barsMarkup(): string {
     )
     .join('');
 }
-export function updateBars(values: Values, recipe: Recipe | null): void {
+export function updateBars(values: Values, recipe: Recipe | null, tolerance: number): void {
   parameters.forEach(({ key, min, max }) => {
     const root = element(`[data-parameter="${key}"]`);
     const value = values[key];
@@ -54,7 +54,7 @@ export function updateBars(values: Values, recipe: Recipe | null): void {
       element('.range-label strong', root).textContent = `${range.min} to ${range.max}`;
       meter.setAttribute(
         'aria-valuetext',
-        `${value}. Target ${range.min} to ${range.max}. Brew tolerance plus or minus 8.`,
+        `${value}. Target ${range.min} to ${range.max}. Brew tolerance plus or minus ${tolerance}.`,
       );
     } else {
       element('.range-label strong', root).textContent = '—';
