@@ -1,6 +1,6 @@
 import { DIFFICULTY_SETTINGS, difficultyName } from '../data/difficulty.js';
 import { INGREDIENTS } from '../data/ingredients.js';
-import { calculateCauldron } from '../logic/brewing.js';
+import { calculateReactionValues } from '../data/reactions.js';
 import { formatTime } from '../logic/timer.js';
 import type { GameState } from '../types.js';
 import { barsMarkup, updateBars } from './bars.js';
@@ -20,7 +20,10 @@ export function renderApp(root: HTMLElement): void {
         <div id="shelf" class="shelf-grid"></div><p id="shelf-note" class="panel-note">Your shelf fills when a new game begins.</p></section>
       <section class="brew-panel" aria-label="Cauldron and brewing"><div id="drop-zone" class="scene" aria-label="Drop an ingredient into the cauldron"><div class="arch"><span class="moon"></span><span class="star star-one">✦</span><span class="star star-two">✧</span><span class="star star-three">·</span><div class="window-line"></div></div><div class="scene-halo"></div><div class="candle candle-one"></div><div class="candle candle-two"></div><div id="pot" class="pot">${cauldronArt}</div><span class="scene-spark spark-one">✧</span><span class="scene-spark spark-two">✦</span></div>
         <div class="mixture-wrap"><p id="mixture-label" class="mixture-label">Your cauldron is waiting</p><ol id="mixture" class="mixture" aria-label="Ingredients in addition order"></ol></div>
-        <button id="brew" class="primary brew-button" data-action="start"><span aria-hidden="true">✧</span> <span id="brew-text">Start Game</span></button>
+        <div class="brew-actions">
+  <button id="brew" class="primary brew-button" data-action="start"><span aria-hidden="true">✧</span> <span id="brew-text">Start Game</span></button>
+  <button id="pour-out" class="secondary pour-button" data-action="pour" hidden>Pour Out</button>
+</div>
         <p id="feedback" class="feedback" role="status" aria-live="polite">A little curiosity. A touch of magic.</p>
       </section>
       <aside class="recipe-column"><section class="recipe-panel panel" aria-labelledby="recipe-name"><div class="panel-heading"><h2>Recipe</h2><span class="muted">YOUR NEXT POTION</span></div><div class="recipe-hero"><div><p class="eyebrow">BREW SOMETHING BRILLIANT</p><h2 id="recipe-name">A mystery awaits</h2></div><div class="recipe-bottle">${logoArt}</div></div><div id="recipe-ranges" class="recipe-ranges"><div><span>Temperature</span><strong>—</strong></div><div><span>Density</span><strong>—</strong></div><div><span>Magic Power</span><strong>—</strong></div></div><p id="counter" class="counter">Ingredients: 0 / 4</p></section>
@@ -45,7 +48,7 @@ export function updateApp(state: GameState): void {
 
   element('#tolerance-text').textContent = `Brew accepts a tolerance of ±${settings.tolerance}.`;
   element('.difficulty-tag').innerHTML =
-    `<span></span> ${difficultyName(state.difficulty)} <i>·</i> Level 2`;
+    `<span></span> ${difficultyName(state.difficulty)} <i>·</i> Level 3`;
 
   element('#score').textContent = String(state.score);
   element('#time').textContent = formatTime(state.timeLeft);
@@ -124,13 +127,20 @@ export function updateApp(state: GameState): void {
       ? `<li class="mixture-item"><span class="slot-number">${index + 1}</span>${ingredientArt(ingredient.id)}<span>${ingredient.name}</span></li>`
       : `<li class="mixture-slot" aria-label="Empty slot ${index + 1}"><span aria-hidden="true">✧</span></li>`;
   }).join('');
+
   const brew = element<HTMLButtonElement>('#brew');
   brew.dataset.action = menu ? 'start' : 'brew';
   brew.disabled = !menu && (!playing || state.ingredients.length === 0);
   element('#brew-text').textContent = menu ? 'Start Game' : 'Brew Potion';
+
+  const pour = element<HTMLButtonElement>('#pour-out');
+  pour.hidden = menu || state.status === 'game-over';
+  pour.disabled = !playing || state.ingredients.length === 0;
+
   const feedback = element('#feedback');
   if (feedback.textContent !== state.feedback) feedback.textContent = state.feedback;
   feedback.dataset.outcome = state.outcome ?? '';
+
   const pot = element('#pot');
   pot.classList.toggle('has-ingredients', state.ingredients.length > 0);
   if (state.outcome !== lastOutcome) {
@@ -141,5 +151,9 @@ export function updateApp(state: GameState): void {
     }
     lastOutcome = state.outcome;
   }
-  updateBars(calculateCauldron(state.ingredients), state.recipe, settings.tolerance);
+  updateBars(
+    calculateReactionValues(state.ingredients, state.difficulty),
+    state.recipe,
+    settings.tolerance,
+  );
 }
